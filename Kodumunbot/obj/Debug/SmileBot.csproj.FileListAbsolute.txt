@@ -1,3 +1,7 @@
+D:\Visual studio projects\Kodumunbot\Kodumunbot\bin\Debug\SmileBot.exe.config
+D:\Visual studio projects\Kodumunbot\Kodumunbot\bin\Debug\SmileBot.exe
+D:\Visual studio projects\Kodumunbot\Kodumunbot\bin\Debug\SmileBot.pdb
+D:\Visual studio projects\Kodumunbot\Kodumunbot\bin\Debug\Discord.Net.Audio.dll
 D:\Visual studio projects\Kodumunbot\Kodumunbot\bin\Debug\Discord.Net.Commands.dll
 D:\Visual studio projects\Kodumunbot\Kodumunbot\bin\Debug\Discord.Net.dll
 D:\Visual studio projects\Kodumunbot\Kodumunbot\bin\Debug\Newtonsoft.Json.dll
@@ -11,10 +15,5 @@ D:\Visual studio projects\Kodumunbot\Kodumunbot\bin\Debug\Nito.AsyncEx.xml
 D:\Visual studio projects\Kodumunbot\Kodumunbot\bin\Debug\Nito.AsyncEx.Concurrent.xml
 D:\Visual studio projects\Kodumunbot\Kodumunbot\bin\Debug\Nito.AsyncEx.Enlightenment.xml
 D:\Visual studio projects\Kodumunbot\Kodumunbot\bin\Debug\RestSharp.xml
-D:\Visual studio projects\Kodumunbot\Kodumunbot\obj\Debug\Kodumunbot.csprojResolveAssemblyReference.cache
-D:\Visual studio projects\Kodumunbot\Kodumunbot\bin\Debug\Discord.Net.Audio.dll
-D:\Visual studio projects\Kodumunbot\Kodumunbot\bin\Debug\Discordbot4444.exe.config
-D:\Visual studio projects\Kodumunbot\Kodumunbot\bin\Debug\Discordbot4444.exe
-D:\Visual studio projects\Kodumunbot\Kodumunbot\bin\Debug\Discordbot4444.pdb
-D:\Visual studio projects\Kodumunbot\Kodumunbot\obj\Debug\Discordbot4444.exe
-D:\Visual studio projects\Kodumunbot\Kodumunbot\obj\Debug\Discordbot4444.pdb
+D:\Visual studio projects\Kodumunbot\Kodumunbot\obj\Debug\SmileBot.exe
+D:\Visual studio projects\Kodumunbot\Kodumunbot\obj\Debug\SmileBot.pdb

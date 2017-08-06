@@ -93,12 +93,7 @@ namespace Kodumunbot
                     replacer_.Replace(metin);
                     await e.Channel.SendMessage(replacer_.replaced);
                 });
-            commands.CreateCommand("cildir")
-                .Do(async (e) =>
-                {
-                    await discord.FindServers("disqord").FirstOrDefault().DefaultChannel.SendMessage("zafer bir octur");
-   
-                });
+            //test
             commands.CreateCommand("sil-ozel").Parameter("isim",ParameterType.Required).Parameter("sayi",ParameterType.Required)
           .Do(async (e) =>
            {
@@ -755,7 +750,7 @@ namespace Kodumunbot
             discord.ExecuteAndWait(async () =>
             {
 
-                await discord.Connect("MzI4MTYxNDQ5MzQ2MDcyNTc2.DC_4JQ.7Z7RC9WXn8pGvwxoDeidU42C-H4", TokenType.Bot);
+                await discord.Connect("MzQzODk4ODY4MzU1OTU2NzM3.DGk4aA.x2ZYebb-gP1qgwCj57Aj6knvTZM", TokenType.Bot);
                 
 
             });
