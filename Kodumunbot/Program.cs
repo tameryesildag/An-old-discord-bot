@@ -5,7 +5,7 @@ using System.Text;
 using System.Timers;
 using System.Threading.Tasks;
 
-namespace Kodumunbot
+namespace SmileBot
 {
    public class Program
     {

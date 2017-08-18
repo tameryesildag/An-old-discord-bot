@@ -12,7 +12,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 
-namespace Kodumunbot
+namespace SmileBot
 {
     
   public class benimbot
@@ -30,6 +30,7 @@ namespace Kodumunbot
         public static string orospucocugu = "yok";
         public static Timer zamanlayici = new Timer();
         public static Timer zamanlayici2 = new Timer();
+        public static Timer disiplintimer = new Timer();
         static Channel yazilanchannel;
         static string statiksecenek1;
         static string statiksecenek2;
@@ -42,6 +43,8 @@ namespace Kodumunbot
         static int sec4oy = 0;
         static bool oldu1 = false;
         static bool oldu2 = false;
+        static bool ruletaktif;
+
         static string[] oyverecekuyeler;
         static bool oylamabaslatildi = false;
         static bool oyverebilir = true;
@@ -50,7 +53,7 @@ namespace Kodumunbot
         string cfoyuncu1 = "Yok";
         string cfoyuncu2 = "Yok";
         bool cf = false;
-        string gercekanahtar = "sifre123";
+        string parola = "sifre123";
         Oyuncu[] oyuncular;
         static Ruletoyuncu[] ruletoyuncular;
         bool cfkatilinmis = false;
@@ -58,7 +61,13 @@ namespace Kodumunbot
         string yasaklananuser = "";
         public static Message[] ruletmesaj;
         int ruletoyuncusayi;
+        static Server sunucu;
+        static User disiplinkullanici;
+        static Channel targetchannel;
+        static string disiplinisim;
+        static string disiplingonderilecekkanal;
         string boslukluhali;
+        static Channel disiplintextchannel;
         public benimbot()
         {
 
@@ -85,7 +94,101 @@ namespace Kodumunbot
                 {
                   await e.Channel.SendMessage("pong");
                 });
-            commands.CreateCommand("deneme").Parameter("metin",ParameterType.Required)
+            commands.CreateCommand("sihirdar").Parameter("isim", ParameterType.Required)
+                .Do(async (e) =>
+                {
+                    string isim = e.GetArg("isim");
+                    league lig = new league();
+                    lig.summonerbul(isim);
+                    
+                    await e.Channel.SendMessage("```▶sihirdar adı: " + lig.summonername + "\n▶sihirdar id: " + lig.summonerid + "\n▶sihirdar id2: " + lig.summonerid2 + "\n▶sihirdar level: " + lig.summonerlevel + "```");
+                    await e.Channel.SendMessage("```▶1. Mac id: " + lig.mac1id + "\n▶2. Mac id: " + lig.mac2id + "\n▶3. Mac id: " + lig.mac3id + "\n▶4. Mac id: " + lig.mac4id + "\n▶5. Mac id: " + lig.mac5id + "```");
+                });
+          /*  commands.CreateCommand("maclar").Parameter("id",ParameterType.Required)
+                .Do(async (e) =>
+                {
+                    string id = e.GetArg("id");
+                    league lig = new league();
+                    lig.macbul(id);
+                    await  e.Channel.SendMessage("```▶1. Mac id: " + lig.mac1id + "\n▶2. Mac id: " + lig.mac2id + "\n▶3. Mac id: " + lig.mac3id + "\n▶4. Mac id: " + lig.mac4id + "\n▶5. Mac id: " + lig.mac5id + "```");
+                }); */
+            commands.CreateCommand("mac").Parameter("uid",ParameterType.Required).Parameter("macid",ParameterType.Required)
+                .Do(async (e) =>
+                {
+                    string macid = e.GetArg("macid");
+                    string uid = e.GetArg("uid");
+                    league lig = new league();
+                    lig.macbilgi(uid, macid);
+                    int dogrusure = Convert.ToInt32(lig.macsure) / 60;
+                    int kalan = Convert.ToInt32(lig.macsure) - (dogrusure * 60);
+                    await e.Channel.SendMessage("```" + "Sonuç: " + lig.macsonuc +"\nOyun modu: " + lig.macoyunmodu + "\nOyun süresi: " + dogrusure.ToString() +":" + kalan + "\nK/D/A: " + lig.kill + "/" + lig.death + "/" + lig.assist + "```");
+
+                });
+            commands.CreateCommand("davet")
+                .Do(async (e) =>
+                {
+
+                    var Davet = await e.Server.CreateInvite();
+                    await e.Channel.SendMessage(e.User.NicknameMention + " https://discord.gg/" + Davet.Code);
+                });
+            commands.CreateCommand("topla")
+                .Do(async (e) =>
+                {
+                    await e.Channel.SendMessage(e.User.NicknameMention + " Diğer kanallardaki herkes " + e.User.VoiceChannel.Name +  " kanalına aktarılıyor.");
+                    foreach (User kullanici in e.Server.Users)
+                    {
+                        if (kullanici.Name != e.User.Name)
+                        {
+                            if (kullanici.VoiceChannel != null)
+                            {
+                                await e.Channel.SendMessage(kullanici.NicknameMention + " Aktarılıyor");
+                                await kullanici.Edit(voiceChannel: e.User.VoiceChannel);
+                            }
+                        }
+                    }
+                });
+            commands.CreateCommand("reset")
+                .Do(async (e) =>
+                {
+                   string tamerid = "244451433812852736";
+                    if (e.User.Id == UInt64.Parse(tamerid))
+                    {
+                        await e.Server.CreateChannel("Oda 1", ChannelType.Voice);
+                        await e.Server.CreateChannel("Oda 2", ChannelType.Voice);
+                        await e.Server.CreateChannel("AFK", ChannelType.Voice);
+                        await e.Server.CreateChannel("Chat", ChannelType.Text);
+                        await e.Server.CreateChannel("Dosya", ChannelType.Text);
+                        await e.Server.CreateChannel("Muzik", ChannelType.Text);
+                        await e.Channel.SendMessage(e.User.NicknameMention + " Kanallar oluşturuldu");
+                    }
+
+                });
+            commands.CreateCommand("Disiplin").Parameter("isim", ParameterType.Required).Parameter("kanal", ParameterType.Required)
+             .Do(async (e) =>
+              {
+                  string tamerid = "244451433812852736";
+                  if (e.User.Id == UInt64.Parse(tamerid))
+                  {
+                      disiplingonderilecekkanal = e.GetArg("kanal");
+                      disiplinisim = e.GetArg("isim");
+                      sunucu = e.Server;
+                      disiplintimer.Interval = 150;
+                      disiplintimer.Elapsed += new ElapsedEventHandler(DisiplinTimer);
+                      disiplintimer.Enabled = true;
+                      disiplintextchannel = e.Channel;
+                      targetchannel = e.User.Server.FindChannels(disiplingonderilecekkanal).FirstOrDefault();
+                      string isim = e.GetArg("isim");
+                      disiplinkullanici = e.Server.FindUsers(isim).FirstOrDefault();
+                      await e.Channel.SendMessage(disiplinkullanici.NicknameMention + " ");
+                      yasaklananuser = isim;
+                  }
+                  else
+                  {
+                      await e.Channel.SendMessage("Yetkiniz yok");
+                  }
+                  
+              });
+            commands.CreateCommand("deneme2").Parameter("metin",ParameterType.Required)
                 .Do(async (e) =>
                 {
                     string metin = e.GetArg("metin");
@@ -122,7 +225,7 @@ namespace Kodumunbot
                 {
                     string girilenanahtar;
                     girilenanahtar = e.GetArg("anahtar");
-                    if (girilenanahtar == gercekanahtar)
+                    if (girilenanahtar == parola)
                     {
                         yasaklananuser = e.GetArg("isim");
                         await e.Channel.SendMessage(yasaklananuser + " İsimli kişinin konuşması yasaklandı");
@@ -138,7 +241,13 @@ namespace Kodumunbot
             commands.CreateCommand("rulet").Parameter("secim", ParameterType.Required).Parameter("ypara", ParameterType.Optional).Parameter("renk", ParameterType.Optional)
                 .Do(async (e) =>
                 {
+                    if (ruletaktif) { 
                     string secim = e.GetArg("secim");
+                    if(secim == "kapa")
+                        {
+                            ruletaktif = false;
+                            await e.Channel.SendMessage("rulet kapandı");
+                        }
                     if(secim == "baslat")
                     {
                         Timerbaslat(1000, 9999);
@@ -155,50 +264,67 @@ namespace Kodumunbot
                     }
                     if(secim == "yatir")
                     {
-                        if(e.GetArg("ypara") != null)
-                        {
-                            Console.WriteLine("Rulete para yatiriliyor (Asama 1)");
-                            ruletoyuncular = new Ruletoyuncu[10];
-                            ruletoyuncular[ruletoyuncusayi] = new Ruletoyuncu();
-                            Console.WriteLine("Rulete para yatiran oyuncunun bilgileri yukleniyor (Asama 2)");
-                            ruletoyuncular[ruletoyuncusayi].isim = e.User.Name;
-                            Console.WriteLine("oyuncunun ismi belirleniyor");
-                            Console.WriteLine("Oyuncudan gelen para" + e.GetArg("ypara"));
-                            int ppara = Int32.Parse(e.GetArg("ypara"));
-                            Console.WriteLine("Para integer degerine cevrildi. " + ppara.ToString());
-                            Console.WriteLine("oyuncunun yatiracagi para belirleniyor");
-                            ruletoyuncular[ruletoyuncusayi].yatirdigipara = ppara;
-                            string yatiracagirenk = "yok";
-                            string prenk = e.GetArg("renk");
-                            Console.WriteLine("Renk belirleniyor (Asama 3)");
-                            if (prenk == "kirmizi")
+                            if (e.GetArg("ypara") != null)
                             {
-                                yatiracagirenk = ":red_circle:";
-                                await e.Channel.SendMessage(e.User.Mention + " Kırmızıya " + ppara + " yatırdınız");
-                            }
-                            if(prenk == "siyah")
-                            {
-                                yatiracagirenk = ":black_circle:";
-                                await e.Channel.SendMessage(e.User.Mention + " Siyaha " + ppara + " yatırdınız");
-                            }
-                            if(prenk == "yesil")
-                            {
-                                yatiracagirenk = ":green_heart:";
-                                await e.Channel.SendMessage(e.User.Mention + " Yeşile " + ppara + " yatırdınız");
-                            }
+                                Console.WriteLine("Rulete para yatiriliyor (Asama 1)");
+                                ruletoyuncular = new Ruletoyuncu[10];
+                                ruletoyuncular[ruletoyuncusayi] = new Ruletoyuncu();
+                                Console.WriteLine("Rulete para yatiran oyuncunun bilgileri yukleniyor (Asama 2)");
+                                ruletoyuncular[ruletoyuncusayi].isim = e.User.Name;
+                                Console.WriteLine("oyuncunun ismi belirleniyor");
+                                Console.WriteLine("Oyuncudan gelen para" + e.GetArg("ypara"));
+                                int ppara = Int32.Parse(e.GetArg("ypara"));
+                                Console.WriteLine("Para integer degerine cevrildi. " + ppara.ToString());
+                                Console.WriteLine("oyuncunun yatiracagi para belirleniyor");
+                                ruletoyuncular[ruletoyuncusayi].yatirdigipara = ppara;
+                                string yatiracagirenk = "yok";
+                                string prenk = e.GetArg("renk");
+                                Console.WriteLine("Renk belirleniyor (Asama 3)");
+                                if (prenk == "kirmizi")
+                                {
+                                    yatiracagirenk = ":red_circle:";
+                                    await e.Channel.SendMessage(e.User.Mention + " Kırmızıya " + ppara + " yatırdınız");
+                                }
+                                if (prenk == "siyah")
+                                {
+                                    yatiracagirenk = ":black_circle:";
+                                    await e.Channel.SendMessage(e.User.Mention + " Siyaha " + ppara + " yatırdınız");
+                                }
+                                if (prenk == "yesil")
+                                {
+                                    yatiracagirenk = ":green_heart:";
+                                    await e.Channel.SendMessage(e.User.Mention + " Yeşile " + ppara + " yatırdınız");
+                                }
 
-                            ruletoyuncular[ruletoyuncusayi].yatirdigirenk = yatiracagirenk;
-                            Console.WriteLine("Bitti");   
+                                ruletoyuncular[ruletoyuncusayi].yatirdigirenk = yatiracagirenk;
+                                Console.WriteLine("Bitti");
+                            }
                             
                         }
+                       
                     }
+
+                        if (e.GetArg("secim") == "ac")
+                        {
+                        string tamerid = "244451433812852736";
+                        if (e.User.Id == UInt64.Parse(tamerid))
+                        {
+                            ruletaktif = true;
+                            await e.Channel.SendMessage("Rulet açıldı");
+                            return;
+                        }
+                        else
+                        {
+                            await e.Channel.SendMessage(e.User.NicknameMention + " Yetkiniz yok.");
+                        }
+                        }
+                    
                 });
-            commands.CreateCommand("para-sil").Parameter("isim",ParameterType.Required).Parameter("para", ParameterType.Required).Parameter("Anahtar",ParameterType.Required)
+            commands.CreateCommand("para-sil").Parameter("isim",ParameterType.Required).Parameter("para", ParameterType.Required)
                 .Do(async (e) =>
                 {
-                    string girilenanahtar;
-                    girilenanahtar = e.GetArg("Anahtar");
-                    if(girilenanahtar == gercekanahtar)
+                    string tamerid = "244451433812852736";
+                    if (e.User.Id == UInt64.Parse(tamerid))
                     {
                         int silinecek = Int32.Parse(e.GetArg("para"));
                         Writer _writer = new Writer();
@@ -208,9 +334,8 @@ namespace Kodumunbot
                     }
                     else
                     {
-                        await e.Channel.SendMessage(e.User.Mention + " Yanlış anahtar");
+                        await e.Channel.SendMessage(e.User.NicknameMention + " Yetkiniz yok.");
                     }
-
                 });
             commands.CreateCommand("coinflip").Parameter("secim", ParameterType.Required).Parameter("para", ParameterType.Optional)
                 .Do(async (e) =>
@@ -541,10 +666,10 @@ namespace Kodumunbot
                         int bolum = ilksayi / ikincisayi;
                         await e.Channel.SendMessage(ilksayi.ToString() + " / " + ikincisayi.ToString() + " = " + bolum.ToString());
                     }
-                    if(isaret == "x")
+                    if(isaret == "*")
                     {
                         int carpim = ilksayi * ikincisayi;
-                        await e.Channel.SendMessage(ilksayi.ToString() + " x " + ikincisayi.ToString() + " = " + carpim.ToString());
+                        await e.Channel.SendMessage(ilksayi.ToString() + " * " + ikincisayi.ToString() + " = " + carpim.ToString());
                     }
 
 
@@ -554,8 +679,6 @@ namespace Kodumunbot
                 {
                     
                         await e.Channel.SendMessage(orospucocugu);
-                    
-                    
                 });
             discord.UsingAudio(x =>
             {
@@ -597,14 +720,16 @@ namespace Kodumunbot
             commands.CreateCommand("yardim")
                 .Do(async (e) =>
                 {
-                    await e.Channel.SendMessage("!geriyesay {saniye} - Geriye sayma işlemi başlatır \n!sunger - sunger resmi gönderir \n!orospucocugu - orospu cocugunu görüntüler \n!orospucocugusec {isim} - orospu cocugunu seçer\n!sil {silinecekmesajsayisi} - girilen sayı kadar mesajı siler\n!ping - ..." + 
-                        "\n!oylamabaslat {secenek1} {secenek2} {secenek3} {secenek4} - En fazla 4 secenekli bir oylama olusturur" + 
-                        "\n!oyver {numara} - varolan bir oylamaya oy verir\n!oylamabitir - varolan oylamayi sonlandırır\n!ayril - bot kanaldan ayrılır ve çevrimdışı olur\n!yanimagel - Bot mesajı yazan kişinin bulunduğu sesli sohbet kanalına girer" + 
-                        "\n!hesapla {sayı1} {işaret} {sayi2} - Yazılan matematik işleminin sonucunu söyler\n!yukle - Uyelerin bilgilerini okur ve sisteme yukler ardından üyelerin bilgilerini kanalda listeler" + 
-                        "\n!para-ekle {hesap ismi} {para miktarı} {anahtar} - seçilen hesaba belirtilen miktarda para yükler\n!para-sil {hesap ismi} {para miktarı} {anahtar} - seçilen hesaptan belirtilen miktar kadar para siler\n kaydol {sifre} - Seçilen şifreyle bir hesap açarsınız" + 
-                        "\n!girisyap {sifre} - Varolan bir hesaba giris yapar \n!bilgi {isim} varolan bir hesabın bilgilerini gösterir" + 
-                        "\n!pm - Botla aranızda bir özel mesajlaşma sekmesi açılır\n!mute {isim} {anahtar} - girilen isime sahip kişinin konuşması yasaklanır\n!Coinflip komutlar - Coinflip komutlarini gösterir");
-                  //  await e.Channel.SendMessage("bY MaMeR MeŞiLdAğ");
+                    await e.Channel.SendMessage(e.User.NicknameMention + "```!geriyesay {saniye} - Geriye sayma işlemi başlatır. \n!sunger - sunger resmi gönderir. \n!orospucocugu - orospu cocugunu görüntüler. \n!orospucocugusec {isim} - orospu cocugunu seçer.\n!sil {silinecekmesajsayisi} - girilen sayı kadar mesajı siler.\n!ping - pong" + 
+                        "\n!oylamabaslat {secenek1} {secenek2} {secenek3} {secenek4} - En fazla 4 secenekli bir oylama olusturur." + 
+                        "\n!oyver {numara} - devam etmekte olan oylamaya oy verir.\n!oylamabitir - varolan oylamayi sonlandırır.\n!ayril - bot kanaldan ayrılır ve çevrimdışı olur.\n!yanimagel - Bot bulunduğunuz sesli sohbet kanalına katılır." + 
+                        "\n!hesapla {sayı1} {işaret} {sayi2} - Yazılan matematik işleminin sonucunu söyler.\n!yukle - Uyelerin bilgilerini okur ve sisteme yukler ve üyelerin bilgilerini kanalda listeler." + 
+                        "\n!para-ekle {hesap ismi} {para miktarı} {anahtar} - seçilen hesaba girilen miktarda para yükler.\n!para-sil {hesap ismi} {para miktarı} {anahtar} - seçilen hesaptan girilen miktar kadar para siler.\nkaydol {sifre} - Seçilen şifreyle bir hesap açarsınız." +
+                        "\n!̶g̶̶i̶̶r̶̶i̶̶s̶̶y̶̶a̶p̶ {sifre} - Varolan bir hesaba giris yapar. \n!bilgi {isim} varolan bir hesabın bilgilerini gösterir." +
+                        "\n!pm - Bot size özel mesaj isteği gönderir.\n!mute {isim} {anahtar} - girilen isime sahip kişinin konuşması yasaklanır.\n!Coinflip komutlar - Coinflip komutlarini gösterir." +
+                        "\n!disiplin {isim} - Disiplini tattırır.\n!reset - Chat - Dosya - Muzik - Oda 1 - Oda 2 - AFK kanallarını oluşturur. \n!topla - Diğer kanallardaki herkesi bulunduğunuz kanala aktarır." + 
+                        "\n!sihirdar {isim} - Sihirdarın bilgilerini gösterir." + "\n!mac-bilgi <id> - Maç bilgilerini gösterir.```");
+                 
 
 
                 });
@@ -658,25 +783,24 @@ namespace Kodumunbot
                   await e.User.SendMessage("Burdan bütün komutları girebilirsiniz \n!yardim");
                    await e.Channel.SendMessage(e.User.Mention + " Özel mesaj isteği gönderildi. Özel mesajdan kayıt olabilir veya giriş yapabilirsiniz.");
                });
-            commands.CreateCommand("para-ekle").Parameter("isim", ParameterType.Required).Parameter("para", ParameterType.Required).Parameter("Anahtar", ParameterType.Required)
+            commands.CreateCommand("para-ekle").Parameter("isim", ParameterType.Required).Parameter("para", ParameterType.Required)
                .Do(async (e) =>
                {
-                   string girilenanahtar;
-                   girilenanahtar = e.GetArg("Anahtar");
-                   if(girilenanahtar == gercekanahtar)
+                   string tamerid = "244451433812852736";
+                   if (e.User.Id == UInt64.Parse(tamerid))
                    {
-                       int yuklenecekpara = Int32.Parse(e.GetArg("para"));
-                       Writer _writer = new Writer();
-                       _writer.paraekle(e.GetArg("isim"), yuklenecekpara);
-                       _writer.Read(e.GetArg("isim"));
-                       await e.Channel.SendMessage(e.GetArg("isim") + " Adlı hesaba " + yuklenecekpara.ToString() + " para yüklendi");
+                           int yuklenecekpara = Int32.Parse(e.GetArg("para"));
+                           Writer _writer = new Writer();
+                           _writer.paraekle(e.GetArg("isim"), yuklenecekpara);
+                           _writer.Read(e.GetArg("isim"));
+                           await e.Channel.SendMessage(e.GetArg("isim") + " Adlı hesaba " + yuklenecekpara.ToString() + " para yüklendi");
                    }
                    else
                    {
-                       await e.Channel.SendMessage(e.User.Mention + " Yanlış anahtar");
+                       await e.Channel.SendMessage(e.User.NicknameMention + " Yetkiniz yok.");
                    }
                });
-            commands.CreateCommand("bilgi").Parameter("isim", ParameterType.Required)
+            commands.CreateCommand("bilgi").Parameter("isim", ParameterType.Multiple)
                .Do(async (e) =>
                {
                    Writer _writer = new Writer();
@@ -699,11 +823,11 @@ namespace Kodumunbot
             commands.CreateCommand("yukle")
                .Do(async (e) =>
                {
-                   await e.Channel.SendMessage("Oyuncuların kayıtları dinamik hafızaya yukleniyor. Bu oyuncu sayısına göre biraz zaman alabilir.");
+                   await e.Channel.SendMessage("Oyuncuların kayıtları hafızaya yukleniyor. Bu oyuncu sayısına göre biraz zaman alabilir.");
                    Writer _writer = new Writer();
                    int l = 0;
                    int b = 0;
-                   DirectoryInfo d = new DirectoryInfo(@"D:\Visual studio projects\Kodumunbot\Kodumunbot\bin\Debug\userData");
+                   DirectoryInfo d = new DirectoryInfo(@"D:\Visual studio projects\SmileBot\Kodumunbot\bin\Debug\userData");
                    foreach (var file in d.GetFiles("*.txt"))
                    {
                        b += 1;
@@ -732,7 +856,7 @@ namespace Kodumunbot
                    l = 0;
                    foreach(Oyuncu _oyuncu in oyuncular)
                    {
-                       await e.Channel.SendMessage(_oyuncu.isim +" " +  _oyuncu.para.ToString());
+                       await e.Channel.SendMessage(_oyuncu.isim +": " +  _oyuncu.para.ToString());
                    }
                    await e.Channel.SendMessage("\nYükleme işlemi tamamlandı.");
                });
@@ -988,6 +1112,29 @@ namespace Kodumunbot
             Console.WriteLine("i2 " + i2.ToString());
             
         }
+        public static async void DisiplinTimer(object sender, ElapsedEventArgs e)
+        {
+            disiplintimer.Enabled = true;
+            string isim = disiplinisim;
+            try
+            {
+                if (disiplinkullanici.VoiceChannel.Name != targetchannel.Name)
+                {
+                    await disiplinkullanici.Edit(voiceChannel: targetchannel);
+                }
+                if (disiplinkullanici.IsServerMuted == false)
+                {
+                    await disiplinkullanici.Edit(true);
+                }
+            }
+            catch
+            {
+                await disiplintextchannel.SendMessage("Hedef kanal silinmiş veya değişmiş ya da kişi şu an sunucuda değil, komut gerçekleştirilemiyor. İşlem sonlandırılıyor.");
+                disiplintimer.Enabled = false;
+                return;
+            }
+            
+        }
         public static void Timerbaslat(int interval, int limit)
         {
             i = 0;
@@ -1018,10 +1165,5 @@ namespace Kodumunbot
 
          //   await e.Channel.SendMessage("rolunuzden alindiniz");
         }
-        public async Task girisbasarili(CommandEventArgs e)
-        {
-
-        } 
-     
     }
 }

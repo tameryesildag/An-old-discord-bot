@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-namespace Kodumunbot
+namespace SmileBot
 {
    public class Writer
     {
@@ -17,7 +17,7 @@ namespace Kodumunbot
   
         public void Write(string isim, string yazilacak, int para)
         {
-            string dosya_yolu = @"D:\Visual studio projects\Kodumunbot\Kodumunbot\bin\Debug\userData\" + isim + ".txt";
+            string dosya_yolu = @"D:\Visual studio projects\SmileBot\Kodumunbot\bin\Debug\userData\" + isim + ".txt";
             //İşlem yapacağımız dosyanın yolunu belirtiyoruz.
             FileStream fs = new FileStream(dosya_yolu, FileMode.OpenOrCreate, FileAccess.Write);
             StreamWriter sw = new StreamWriter(fs);
@@ -31,7 +31,7 @@ namespace Kodumunbot
         }
         public void Read(string isim)
         {
-            string dosya_yolu = @"D:\Visual studio projects\Kodumunbot\Kodumunbot\bin\Debug\userData\" + isim + ".txt";
+            string dosya_yolu = @"D:\Visual studio projects\SmileBot\Kodumunbot\bin\Debug\userData\" + isim + ".txt";
             FileStream fs = new FileStream(dosya_yolu, FileMode.Open, FileAccess.Read);
             StreamReader sw = new StreamReader(fs);
             okunanyazi1 = sw.ReadLine();
@@ -52,7 +52,7 @@ namespace Kodumunbot
         }
         public void paraekle(string isim, int miktar)
         {
-            string dosya_yolu = @"D:\Visual studio projects\Kodumunbot\Kodumunbot\bin\Debug\userData\" + isim + ".txt";
+            string dosya_yolu = @"D:\Visual studio projects\SmileBot\Kodumunbot\bin\Debug\userData\" + isim + ".txt";
             Read(isim);
             satir1 = okunanyazi1;
             satir2 = okunanyazi2;
@@ -64,7 +64,7 @@ namespace Kodumunbot
         }
         public void parasil(string isim, int miktar)
         {
-            string dosya_yolu = @"D:\Visual studio projects\Kodumunbot\Kodumunbot\bin\Debug\userData\" + isim + ".txt";
+            string dosya_yolu = @"D:\Visual studio projects\SmileBot\Kodumunbot\bin\Debug\userData\" + isim + ".txt";
             Read(isim);
             satir1 = okunanyazi1;
             satir2 = okunanyazi2;
