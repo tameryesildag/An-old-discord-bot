@@ -17,7 +17,7 @@ namespace SmileBot
         private CommandService commands;
         public DiscordSocketClient client;
         private IServiceProvider services;
-        string token = "MzQzODk4ODY4MzU1OTU2NzM3.DHofdA.rbdUYoeGL8TuuY10hFxk7QhQgtg";
+        string token = " :) ";
 
         public static void Main(string[] args) => new Program().Start().GetAwaiter().GetResult();
      
