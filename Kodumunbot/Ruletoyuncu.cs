@@ -8,8 +8,8 @@ namespace SmileBot
 {
     class Ruletoyuncu
     {
-        public int yatirdigipara;
-        public string yatirdigirenk;
-        public string isim;
+        public int yatirdigipara = 0;
+        public string yatirdigirenk = "";
+        public string isim = "";
     }
 }
