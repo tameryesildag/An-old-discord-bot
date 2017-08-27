@@ -141,14 +141,7 @@ namespace SmileBo
            // await Context.Channel.SendMessageAsync(secenekler[sıra]);
            for(int i = 0; i< secenekler.Length; i++)
             {
-                if (i == sıra)
-                {
-                    metin += "**" + (i + 1).ToString() + "- " + secenekler[i] + " " + oylar[i] + "**\n\n";
-                }
-                else
-                {
                     metin += "" + (i + 1).ToString() + "- " + secenekler[i] + " " + oylar[i] + "\n\n";
-                }
             }
             var eb = new EmbedBuilder() { Title = ":clipboard: Anket", Description = metin, Color = Color.LightOrange };
             await Context.Channel.SendMessageAsync("", false, eb);
