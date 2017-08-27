@@ -19,7 +19,7 @@ namespace SmileBo
 
     public class benimbot : ModuleBase
     {
-
+        //deneme
        string[] kills;
        string[] deaths;
        string[] assists;
