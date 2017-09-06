@@ -224,11 +224,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="benimbot.cs" />
+    <Compile Include="havadurumu.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Replacer.cs" />
     <Compile Include="Riot.cs" />
-    <Compile Include="Ruletoyuncu.cs" />
     <Compile Include="Writer.cs" />
   </ItemGroup>
   <ItemGroup>

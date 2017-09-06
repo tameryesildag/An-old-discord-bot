@@ -17,8 +17,8 @@ namespace SmileBot
         private CommandService commands;
         public DiscordSocketClient client;
         private IServiceProvider services;
-        string token = " :) ";
-
+        string token = "MzQzODk4ODY4MzU1OTU2NzM3.DITJNA.GZ_4w8nIpHvOg6pnBAM0GasNYg0";
+        
         public static void Main(string[] args) => new Program().Start().GetAwaiter().GetResult();
      
         public async Task Start()
@@ -42,6 +42,7 @@ namespace SmileBot
         public async Task HandleCommands(SocketMessage msgParam)
         {
             
+
             var msg = msgParam as SocketUserMessage;
             char prefix = '!';
             if (msg == null) return;
@@ -58,6 +59,6 @@ namespace SmileBot
             Console.WriteLine(msg.ToString());
             return Task.CompletedTask;
         }
-     }  
+    }  
  }
 
